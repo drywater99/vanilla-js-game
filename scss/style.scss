@@ -1,9 +1,24 @@
-@import 'colors';
-@import 'utils'; // functional helpers
-@import 'base'; // global styles
+.bird {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
 
-// **********
-// components
-// **********
-@import 'components/grid'; // main grid
-// ... add more here
+.hit {
+    background: red !important
+}
+
+.counter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    background: crimson;
+    font-size: 30px;
+    margin: 20px;
+    margin-top: 500px;
+}
