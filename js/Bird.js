@@ -3,8 +3,11 @@ export default class Bird {
     defaultConfig = {
         // legt die Grund-Konfiguration der Birds fest
         color: 'black',
-        speed: 2 + Math.random() * 8,
-        position: 0,
+        speed: 1 + Math.random() * 2,
+        position: {
+            x: 0,
+            y: 200 + Math.random() * 200,
+        },
     };
 
     constructor(config) {
@@ -45,15 +48,16 @@ export default class Bird {
     }
 
     update() {
-        this.position = this.position + this.speed;
-        if (this.position > window.innerwidth) {
+        this.position.x += this.speed;
+        if (this.position.x > window.innerWidth) {
             //wir zerstören den Vogel am rechten Bildschirmrand mithilfe der Funktion "onRemove()"
             //da in der KLasse Bird festgelegt ist, wo sich der Bird befindet wenden wir hier die Funktion onRemove aus der Klasse Game an.
             //Wir müssen die Funktion onRemove() aber in der Klasse-Game positionieren, da mit die Funktion den Array verkleinert, der sich in Ihr befindet
             this.remove() //entfernt aus HTML
             this.onEscape()
         } else {
-            this.el.style.left = this.position + 'px';
+            this.el.style.left = this.position.x + 'px';
+            this.el.style.top = this.position.y + Math.sin(this.position.x / 100) * 100 + 'px';
         }
     }
 

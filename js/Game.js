@@ -1,15 +1,22 @@
 import Bird from './Bird'; // Import verknüpft die Bird.js mit unsserer Main.js
 import Counter from './Counter';
+import Hunter from './Hunter';
 
 
 // Für erstellen eine neue KLasse "Game" mit einem optionalen Constructor um darin definierte Funktionen sofort auszuführen.
 export default class Game {
-    birds = [];
+    entities = [];
 
     constructor() {
         this.createBirds();
         this.createCounter()
         this.loop();
+        this.createHunter();
+    }
+
+    createHunter() {
+        this.hunter = new Hunter()
+        this.entities = [...this.entities, this.hunter]
     }
 
     createCounter() {
@@ -17,7 +24,7 @@ export default class Game {
     }
 
     //createBirds() {
-    //this.birds = [ // durch "this." greifen wir auf die Klasse Birds zu
+    //this.entities = [ // durch "this." greifen wir auf die Klasse Birds zu
     //new Bird({
     // ...config,
     //color: 'hotpink',
@@ -40,14 +47,14 @@ export default class Game {
             onClick: this.updatePlayerPoints,
             onEscape: this.updateBirdsPoints
         };
-        this.birds = [...this.birds, new Bird(config)];
+        this.entities = [...this.entities, new Bird(config)];
     }
 
     removeBird = bird => {
-        const index = this.birds.indexOf(bird);
-        this.birds = [
-            ...this.birds.slice(0, index),
-            ...this.birds.slice(index + 1), // entfernt alle Birds vor und hinter dem Element
+        const index = this.entities.indexOf(bird);
+        this.entities = [
+            ...this.entities.slice(0, index),
+            ...this.entities.slice(index + 1), // entfernt alle Birds vor und hinter dem Element
         ];
     }; // indem wir eine Pfeilfunktion bird => anwenden gehen wir sicher, dass sich this.removeBird auf die Klasse Game bezieht
     // entfernt aus dem loop..
@@ -63,7 +70,7 @@ export default class Game {
 
     loop() {
         Math.random() < 1 / 60 && this.addBird() //fügen die addBird-Funktion als Random dem Loop hinzu um immer wieder neue Birds automatisch zu produzieren
-        this.birds.forEach(bird => bird.update());
+        this.entities.forEach(entity => entity.update());
         requestAnimationFrame(() => this.loop()); // durch "this." holen wir uns die Funktion "update aus der Klasse Birds in unsere KLasse Game"
     }
 }
