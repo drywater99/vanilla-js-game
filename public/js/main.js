@@ -121,18 +121,22 @@ function () {
     });
 
     config = _objectSpread({}, this.defaultConfig, config); //Konfigurations-Objekt,
-    //this = config // definiert config, erlaubt uns die Default-Konfiguration zu überschreiben
+    //this = config // definiert config, erlaubt uns die Default-Konfiguration zu überschreiben und verbessert die Lesbarkeit
 
     var _config = config,
         color = _config.color,
         speed = _config.speed,
         position = _config.position,
-        removeBird = _config.removeBird;
+        onRemove = _config.onRemove,
+        onClick = _config.onClick,
+        onEscape = _config.onEscape;
+    this.onClick = onClick;
     this.color = color;
     this.position = position;
     this.speed = speed;
-    this.removeBird = removeBird; // wir reichen die Eltern-Funktion in die Kind-Klasse
+    this.onRemove = onRemove; // wir reichen die Eltern-Funktion in die Kind-Klasse
 
+    this.onEscape = onEscape;
     this.el = this.render();
     this.addClickHandler();
   }
@@ -143,8 +147,18 @@ function () {
       var _this = this;
 
       this.el.addEventListener('click', function () {
-        _this.el.classList.add('hit');
+        _this.onClick(); //fügt einen Punkt in den Countzer bei Klick
+
+
+        _this.remove(); //entfernt aus HTML beim Click
+
       }); //Funktion löst aus, dass der Bird abgeschossen wird
+    }
+  }, {
+    key: "remove",
+    value: function remove() {
+      this.onRemove(this);
+      this.el.remove();
     }
   }, {
     key: "update",
@@ -152,11 +166,12 @@ function () {
       this.position = this.position + this.speed;
 
       if (this.position > window.innerwidth) {
-        //wir zerstören den Vogel am rechten Bildschirmrand mithilfe der Funktion "removeBird()"
-        //da in der KLasse Bird festgelegt ist, wo sich der Bird befindet wenden wir hier die Funktion removeBird aus der Klasse Game an.
-        //Wir müssen die Funktion removeBird() aber in der Klasse-Game positionieren, da mit die Funktion den Array verkleinert, der sich in Ihr befindet
-        this.removeBird(this);
-        this.el.remove(); //entfernt aus HTML
+        //wir zerstören den Vogel am rechten Bildschirmrand mithilfe der Funktion "onRemove()"
+        //da in der KLasse Bird festgelegt ist, wo sich der Bird befindet wenden wir hier die Funktion onRemove aus der Klasse Game an.
+        //Wir müssen die Funktion onRemove() aber in der Klasse-Game positionieren, da mit die Funktion den Array verkleinert, der sich in Ihr befindet
+        this.remove(); //entfernt aus HTML
+
+        this.onEscape();
       } else {
         this.el.style.left = this.position + 'px';
       }
@@ -290,7 +305,16 @@ function () {
       var index = _this.birds.indexOf(bird);
 
       _this.birds = [].concat(_toConsumableArray(_this.birds.slice(0, index)), _toConsumableArray(_this.birds.slice(index + 1)));
-      console.log(_this.birds.length);
+    });
+
+    _defineProperty(this, "updateBirdsPoints", function () {
+      // fügt die Funktion hinzu; jetzt erscheint ein Punkt für jeden Vogel der aus dem Bildschirm fliegt
+      _this.counter.addBirdsPoint();
+    });
+
+    _defineProperty(this, "updatePlayerPoints", function () {
+      //Funktion ein Punkt für jeden getroffenen Vogel
+      _this.counter.addPlayerPoint();
     });
 
     this.createBirds();
@@ -302,16 +326,6 @@ function () {
     key: "createCounter",
     value: function createCounter() {
       this.counter = new _Counter__WEBPACK_IMPORTED_MODULE_1__["default"]();
-      this.counter.addPlayerPoint();
-      this.counter.addPlayerPoint();
-      this.counter.addBirdsPoint();
-      this.counter.addBirdsPoint();
-      this.counter.addBirdsPoint();
-    }
-  }, {
-    key: "addCounter",
-    value: function addCounter() {
-      this.counter = [].concat(_toConsumableArray(this.counter), [new _Counter__WEBPACK_IMPORTED_MODULE_1__["default"]()]);
     } //createBirds() {
     //this.birds = [ // durch "this." greifen wir auf die Klasse Birds zu
     //new Bird({
@@ -335,15 +349,14 @@ function () {
       //prodziert neue Birds und fügt sie dem Array Birds hinzu.
       var config = {
         // config legt Konfigurationen fest die von den Standardkonfigurationen aus "Bird" abweichen sollen
-        removeBird: this.removeBird
+        onRemove: this.removeBird,
+        onClick: this.updatePlayerPoints,
+        onEscape: this.updateBirdsPoints
       };
       this.birds = [].concat(_toConsumableArray(this.birds), [new _Bird__WEBPACK_IMPORTED_MODULE_0__["default"](config)]);
     }
   }, {
     key: "loop",
-    // indem wir eine Pfeilfunktion bird => anwenden gehen wir sicher, dass sich this.removeBird auf die Klasse Game bezieht
-    // entfernt aus dem loop..
-    //um Bird aus dem Array zu entfernen, sobald er über den Bildschirmrand geht, erstellen wir eine Eltern-Funktion  die wir in das Kind(Bird) hineinreichen. Das machen wir weil die Positionierung in der Bird-Klasse definiert ist)
     value: function loop() {
       var _this2 = this;
 

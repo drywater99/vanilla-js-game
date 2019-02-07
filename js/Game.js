@@ -14,15 +14,6 @@ export default class Game {
 
     createCounter() {
         this.counter = new Counter()
-        this.counter.addPlayerPoint()
-        this.counter.addPlayerPoint()
-        this.counter.addBirdsPoint()
-        this.counter.addBirdsPoint()
-        this.counter.addBirdsPoint()
-    }
-
-    addCounter() {
-        this.counter = [...this.counter, new Counter()];
     }
 
     //createBirds() {
@@ -45,7 +36,9 @@ export default class Game {
         //prodziert neue Birds und fügt sie dem Array Birds hinzu.
         const config = {
             // config legt Konfigurationen fest die von den Standardkonfigurationen aus "Bird" abweichen sollen
-            removeBird: this.removeBird,
+            onRemove: this.removeBird,
+            onClick: this.updatePlayerPoints,
+            onEscape: this.updateBirdsPoints
         };
         this.birds = [...this.birds, new Bird(config)];
     }
@@ -56,10 +49,17 @@ export default class Game {
             ...this.birds.slice(0, index),
             ...this.birds.slice(index + 1), // entfernt alle Birds vor und hinter dem Element
         ];
-        console.log(this.birds.length);
     }; // indem wir eine Pfeilfunktion bird => anwenden gehen wir sicher, dass sich this.removeBird auf die Klasse Game bezieht
     // entfernt aus dem loop..
     //um Bird aus dem Array zu entfernen, sobald er über den Bildschirmrand geht, erstellen wir eine Eltern-Funktion  die wir in das Kind(Bird) hineinreichen. Das machen wir weil die Positionierung in der Bird-Klasse definiert ist)
+
+    updateBirdsPoints = () => { // fügt die Funktion hinzu; jetzt erscheint ein Punkt für jeden Vogel der aus dem Bildschirm fliegt
+        this.counter.addBirdsPoint()
+    }
+
+    updatePlayerPoints = () => { //Funktion ein Punkt für jeden getroffenen Vogel
+        this.counter.addPlayerPoint()
+    }
 
     loop() {
         Math.random() < 1 / 60 && this.addBird() //fügen die addBird-Funktion als Random dem Loop hinzu um immer wieder neue Birds automatisch zu produzieren
